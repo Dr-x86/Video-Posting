@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import notify
 
 load_dotenv()
-SUPA_BASE_KEY = os.getenv("SUPA_BASE_KEY")
+SUPA_BASE_KEY = os.getenv("SUPABASE_KEY")
 DATABASE = os.getenv("SUPABASE_DB")
 ACCESS_BOT_TOKEN = os.getenv("FB_ACCESS_TOKEN")
 page_id = '595985150275800'
