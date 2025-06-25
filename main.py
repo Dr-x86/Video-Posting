@@ -12,6 +12,8 @@ DATABASE = os.getenv("SUPABASE_DB")
 ACCESS_BOT_TOKEN = os.getenv("FB_ACCESS_TOKEN")
 page_id = '595985150275800'
 
+print(f"\n{SUPA_BASE_KEY}\n{DATABASE}\n{ACCESS_BOT_TOKEN}")
+
 ## CLIENT FOR DB
 supabase: Client = create_client(DATABASE, SUPA_BASE_KEY)
 
