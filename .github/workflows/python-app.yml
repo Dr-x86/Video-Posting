@@ -16,7 +16,7 @@ jobs:
         uses: actions/checkout@v3
       
       - name: Set up ffmpeg
-      - run: |
+        run: |
             sudo apt-get update
             sudo apt-get install -y ffmpeg
             
