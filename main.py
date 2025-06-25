@@ -5,6 +5,7 @@ from yt_dlp import YoutubeDL
 from supabase import create_client, Client
 from dotenv import load_dotenv
 import notify
+import praw
 
 load_dotenv()
 SUPA_BASE_KEY = os.getenv("SUPABASE_KEY")
@@ -27,43 +28,28 @@ def verify(urls: list):
     return usados
 
 def buscarVideo():
-    sourceVideos = ["perfectlycutscreams", "hatsunemiku", "kasaneteto", "frieren"]
-    random.shuffle(sourceVideos)  # Aleatoriza el orden
+    try:
+        reddit = praw.Reddit(
+            client_id=os.environ["REDDIT_CLIENT_ID"],
+            client_secret=os.environ["REDDIT_CLIENT_SECRET"],
+            username=os.environ["REDDIT_USERNAME"],
+            password=os.environ["REDDIT_PASSWORD"],
+            user_agent="RedditVideoBot/1.0 by u/{}".format(os.environ["REDDIT_USERNAME"])
+        )
 
-    headers = {"User-agent": "Mozilla/5.0"}
+        subreddits = ["bluearchive", "zenlesszonezero", "perfectlycutscreams", "hatsunemiku", "kasaneteto", "frieren"]
+        for sub in subreddits:
+            for post in reddit.subreddit(sub).new(limit=30):
+                if post.is_video and not post.stickied:
+                    print(f"🎥 Post encontrado: {post.title}")
+                    return post.title, post.url
+        print("❌ No se encontraron videos.")
+        return None, None
 
-    for subreddit in sourceVideos:
-        url = f"https://www.reddit.com/r/{subreddit}/new/.json?limit=100"
-        try:
-            res = requests.get(url, headers=headers)
-            res.raise_for_status()
-            posts = res.json()["data"]["children"]
-            videos = [p['data'] for p in posts if p['data'].get('is_video')]
-            print("Videos encontrados: ",len(videos))
-            
-            urls = ["https://reddit.com" + v['permalink'] for v in videos]
-            usados = verify(urls)
-            
-            nuevos_videos = [v for v in videos if "https://reddit.com" + v['permalink'] not in usados]
-            print("Nuevos videos: ", len(nuevos_videos))
-            
-            if nuevos_videos:
-                selected = random.choice(nuevos_videos)
-                video_url = "https://reddit.com" + selected['permalink']
-                title = selected['title']
-                print(f"\n🎥 NUEVO VIDEO ENCONTRADO EN /r/{subreddit}")
-                print(f"Título: {title}\nURL: {video_url}\n")
-                return title, video_url
+    except Exception as e:
+        notify.Me(f"[REDDIT] - Error con PRAW: {e}")
+        return None, None
 
-        except requests.exceptions.RequestException as req_err:
-            notify.Me(f"[VIDEOS] - Error de red o HTTP: {req_err}")
-        except ValueError:
-            notify.Me("[VIDEOS] - Error al decodificar JSON.")
-        except Exception as e:
-            notify.Me(f"[VIDEOS] - Error inesperado: {e}")
-
-    print("❌ No se encontraron videos nuevos en los subreddits.")
-    return None, None
 
 def descargarVideo(url):
     ydl_opts = {
