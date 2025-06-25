@@ -37,6 +37,10 @@ jobs:
           PERSONAL_CHAT_ID: ${{ secrets.PERSONAL_CHAT_ID }}
           SUPABASE_KEY: ${{ secrets.SUPABASE_KEY }}
           SUPABASE_DB: ${{ secrets.SUPABASE_DB }}
+          REDDIT_CLIENT_ID: ${{ secrets.REDDIT_CLIENT_ID }}
+          REDDIT_CLIENT_SECRET: ${{ secrets.REDDIT_CLIENT_SECRET }}
+          REDDIT_USERNAME: ${{ secrets.REDDIT_USERNAME }}
+          REDDIT_PASSWORD: ${{ secrets.REDDIT_PASSWORD }}
         run: python main.py
 
       - name: Keep repo alive
