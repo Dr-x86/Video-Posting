@@ -55,10 +55,15 @@ def descargarVideo(url):
     ydl_opts = {
         'outtmpl': 'Test.mp4',
         'merge_output_format': 'mp4',
-        'quiet': False
+        'quiet': False,
+        'http_headers': {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 Chrome/122.0.0.0 Safari/537.36',
+            'Referer': 'https://www.reddit.com'
+        }
     }
     with YoutubeDL(ydl_opts) as ydl:
         ydl.download([url])
+
 
 
 def subirPost(caption, urlVideo):
